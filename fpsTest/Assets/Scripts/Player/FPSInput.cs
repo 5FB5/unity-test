@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,18 +13,21 @@ public class FPSInput : MonoBehaviour
     public Camera playerCamera;
 
     private CharacterController ptr_characterController;
-
+    
     private float gravity = -9.8f;
+    
     private float playerCameraDefaultFOV = 60.0f;
-    private float _lerpTime = 0.0f;
+    private float playerCameraTargetFOV = 0.0f;
+    private float playerCameraFOVChangeSpeed = 25.0f;
 
     private void Start()
     {
         ptr_characterController = GetComponent<CharacterController>();
-        playerCamera.fieldOfView = playerCameraDefaultFOV;
-
         Rigidbody rb = GetComponent<Rigidbody>();
 
+        playerCamera.fieldOfView = playerCameraDefaultFOV;
+        playerCameraTargetFOV = playerCamera.fieldOfView;
+        
         if (rb != null)
         {
             rb.freezeRotation = true;
@@ -34,21 +38,18 @@ public class FPSInput : MonoBehaviour
 
     private void Update()
     {
-        _lerpTime += Time.deltaTime;
-
-        var t = _lerpTime / 3;
-
-        t = Mathf.SmoothStep(0, 1, t);
-
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, playerCamera.fieldOfView + 15, t);
+            playerCameraTargetFOV = playerCameraTargetFOV + 15;
+            walkSpeed = walkSpeed + .5f;
         }
         else if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-
-            playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, playerCameraDefaultFOV, t);
+            playerCameraTargetFOV = playerCameraDefaultFOV;
+            walkSpeed = walkSpeed - .5f;
         }
+
+        playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, playerCameraTargetFOV, playerCameraFOVChangeSpeed * Time.deltaTime);
     }
 
     private void FixedUpdate()

@@ -7,8 +7,7 @@ public class MouseLook : MonoBehaviour
     public enum RotationAxis
     {
         MouseX = 0,
-        MouseY = 1,
-        MouseXY = 2
+        MouseY = 1
     }
 
     public RotationAxis axis = RotationAxis.MouseX;
